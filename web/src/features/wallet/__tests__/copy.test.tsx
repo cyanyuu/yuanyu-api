@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { createInstance } from 'i18next'
 import { I18nextProvider, initReactI18next } from 'react-i18next'
 import { beforeEach, expect, it, vi } from 'vitest'
@@ -26,6 +26,7 @@ import en from '@/i18n/locales/en.json'
 import zh from '@/i18n/locales/zh.json'
 import { api } from '@/lib/api'
 
+import { RedemptionDialog } from '../components/dialogs/redemption-dialog'
 import { RechargeFormCard } from '../components/recharge-form-card'
 
 const i18n = createInstance()
@@ -98,13 +99,9 @@ it.each([
           priceRatio={priceRatio}
           calculating={false}
           paymentLoading={null}
-          redemptionCode=''
-          redeeming={false}
           onSelectPreset={vi.fn()}
           onTopupAmountChange={vi.fn()}
           onPaymentMethodSelect={vi.fn()}
-          onRedemptionCodeChange={vi.fn()}
-          onRedeem={vi.fn()}
         />
       </I18nextProvider>
     )
@@ -125,3 +122,56 @@ it.each([
     expect(screen.getByPlaceholderText('Minimum 1')).toBeVisible()
   }
 )
+
+it('keeps code entry and redemption available in the translated dialog without allowing duplicate submissions', async () => {
+  const props = {
+    open: true,
+    enabled: true,
+    code: '',
+    redeeming: false,
+    onOpenChange: vi.fn(),
+    onCodeChange: vi.fn(),
+    onRedeem: vi.fn(),
+  }
+  const view = render(
+    <I18nextProvider i18n={i18n}>
+      <RedemptionDialog {...props} />
+    </I18nextProvider>
+  )
+
+  expect(screen.getByRole('button', { name: '兑换额度' })).toBeDisabled()
+  fireEvent.change(screen.getByPlaceholderText('输入您的兑换码'), {
+    target: { value: 'synthetic-test-code' },
+  })
+  expect(props.onCodeChange).toHaveBeenCalledWith('synthetic-test-code')
+
+  view.rerender(
+    <I18nextProvider i18n={i18n}>
+      <RedemptionDialog {...props} code='synthetic-test-code' />
+    </I18nextProvider>
+  )
+  await act(() => i18n.changeLanguage('en'))
+  fireEvent.click(screen.getByRole('button', { name: 'Redeem' }))
+  expect(props.onRedeem).toHaveBeenCalledTimes(1)
+
+  view.rerender(
+    <I18nextProvider i18n={i18n}>
+      <RedemptionDialog {...props} code='synthetic-test-code' redeeming />
+    </I18nextProvider>
+  )
+  expect(screen.getByRole('button', { name: 'Redeem' })).toBeDisabled()
+  const redemptionForm = screen
+    .getByRole('button', { name: 'Redeem' })
+    .closest('form')
+  expect(redemptionForm).not.toBeNull()
+  if (!redemptionForm) throw new Error('Redemption form is missing')
+  fireEvent.submit(redemptionForm)
+  expect(props.onRedeem).toHaveBeenCalledTimes(1)
+
+  view.rerender(
+    <I18nextProvider i18n={i18n}>
+      <RedemptionDialog {...props} enabled={false} />
+    </I18nextProvider>
+  )
+  expect(screen.queryByPlaceholderText('Enter your redemption code')).toBeNull()
+})
