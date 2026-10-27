@@ -35,6 +35,7 @@ import { RedemptionDialog } from './components/dialogs/redemption-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
+import { WalletMoneyRain } from './components/wallet-money-rain'
 import { WalletStatsCard } from './components/wallet-stats-card'
 import { DEFAULT_DISCOUNT_RATE, PAYMENT_TYPES } from './constants'
 import {
@@ -311,6 +312,7 @@ export function Wallet(props: WalletProps) {
         <SectionPageLayout.Content>
           <div className='wallet-page'>
             <div className='wallet-background'>
+              <WalletMoneyRain />
               <div className='wallet-canvas'>
                 <WalletStatsCard user={user} loading={userLoading} />
                 <Tabs
