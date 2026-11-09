@@ -27,7 +27,10 @@ import { isLikelyHtml } from '@/lib/content-format'
 import { useAuthStore } from '@/stores/auth-store'
 
 import { CTA, Features, Hero, HowItWorks, Stats } from './components'
+import { GlobalNetwork } from './components/global-network'
 import { useHomePageContent } from './hooks'
+
+import '@/styles/home.css'
 
 export function Home() {
   const { i18n, t } = useTranslation()
@@ -122,12 +125,17 @@ export function Home() {
 
   return (
     <PublicLayout showMainContainer={false}>
-      <Hero isAuthenticated={isAuthenticated} />
-      <Stats />
-      <Features />
-      <HowItWorks />
-      <CTA isAuthenticated={isAuthenticated} />
-      <Footer />
+      <div className='home-page'>
+        <GlobalNetwork />
+        <main>
+          <Hero isAuthenticated={isAuthenticated} />
+          <Stats />
+          <Features />
+          <HowItWorks />
+          <CTA isAuthenticated={isAuthenticated} />
+        </main>
+        <Footer />
+      </div>
     </PublicLayout>
   )
 }
