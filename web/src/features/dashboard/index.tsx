@@ -211,7 +211,7 @@ export function Dashboard() {
       const granularity = getSavedGranularity()
       return {
         timeGranularity: granularity,
-        selectedRange: getDefaultDays(granularity),
+        selectedRange: getDefaultDays(),
         topUserLimit: 10,
       }
     }
@@ -271,6 +271,7 @@ export function Dashboard() {
           onPreferencesChange={handleChartPreferencesChange}
         />
         <ModelsFilter
+          showQuickRange
           preferences={chartPreferences}
           currentFilters={modelFilters}
           onFilterChange={handleFilterChange}
@@ -366,6 +367,7 @@ export function Dashboard() {
               <FadeIn delay={0.1}>
                 <Suspense fallback={<ModelChartsFallback />}>
                   <LazyConsumptionDistributionChart
+                    timeRange={modelFilters}
                     data={modelData}
                     loading={dataLoading}
                     defaultChartType={
@@ -380,6 +382,7 @@ export function Dashboard() {
               <FadeIn delay={0.15}>
                 <Suspense fallback={<ModelChartsFallback />}>
                   <LazyModelCharts
+                    timeRange={modelFilters}
                     data={modelData}
                     loading={dataLoading}
                     defaultChartTab={chartPreferences.modelAnalyticsChart}

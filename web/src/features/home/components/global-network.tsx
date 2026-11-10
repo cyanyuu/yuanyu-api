@@ -18,8 +18,6 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { useEffect, useRef } from 'react'
 
-import { useTheme } from '@/context/theme-provider'
-
 type GlobePoint = readonly [number, number, number]
 
 // Simplified silhouettes, solely for the decorative globe (not a geographic map).
@@ -204,7 +202,6 @@ const ROUTES = [
 
 export function GlobalNetwork() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { resolvedTheme } = useTheme()
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -213,12 +210,10 @@ export function GlobalNetwork() {
     if (!context) return
 
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const dark = resolvedTheme === 'dark'
-    const color = dark ? '126,208,223' : '65,143,163'
-    const linkColor = dark ? '139,189,245' : '82,137,191'
-    const dotOpacity = dark
-      ? [0.08, 0.13, 0.2, 0.26, 0.43, 0.62]
-      : [0.07, 0.12, 0.18, 0.26, 0.43, 0.64]
+    let dark = document.documentElement.classList.contains('dark')
+    let color = '0,0,0'
+    let linkColor = '0,0,0'
+    const dotOpacity = [0.07, 0.12, 0.18, 0.26, 0.43, 0.62]
     const projectedDots = new Float32Array(GLOBE_DOTS.length * 2)
     const dotLayers = new Int8Array(GLOBE_DOTS.length)
     const projectedPoint: [number, number, number] = [0, 0, 0]
@@ -230,6 +225,30 @@ export function GlobalNetwork() {
     let elapsedSinceDraw = 0
     let frame = 0
     let visible = false
+
+    // Resolve semantic CSS colors only on theme changes, never in the frame loop.
+    const paletteCanvas = document.createElement('canvas')
+    paletteCanvas.width = paletteCanvas.height = 1
+    const paletteContext = paletteCanvas.getContext('2d', {
+      willReadFrequently: true,
+    })
+    function syncPalette() {
+      if (!paletteContext || !canvas) return
+      dark = document.documentElement.classList.contains('dark')
+      const style = getComputedStyle(canvas)
+      const colors = ['--home-network-dot', '--home-network-link'].map(
+        (name) => {
+          paletteContext.clearRect(0, 0, 1, 1)
+          paletteContext.fillStyle = style.getPropertyValue(name).trim()
+          paletteContext.fillRect(0, 0, 1, 1)
+          return [...paletteContext.getImageData(0, 0, 1, 1).data]
+            .slice(0, 3)
+            .join(',')
+        }
+      )
+      ;[color, linkColor] = colors
+      if (visible && !document.hidden) draw()
+    }
 
     function draw() {
       if (!context) return
@@ -417,6 +436,16 @@ export function GlobalNetwork() {
       visible = entry.isIntersecting
       syncPlayback()
     })
+    const paletteObserver = new MutationObserver(syncPalette)
+    paletteObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-theme-preset'],
+    })
+    paletteObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    syncPalette()
     resize.observe(canvas)
     intersection.observe(canvas)
     document.addEventListener('visibilitychange', syncPlayback)
@@ -426,10 +455,11 @@ export function GlobalNetwork() {
       cancelAnimationFrame(frame)
       resize.disconnect()
       intersection.disconnect()
+      paletteObserver.disconnect()
       document.removeEventListener('visibilitychange', syncPlayback)
       motion.removeEventListener('change', syncPlayback)
     }
-  }, [resolvedTheme])
+  }, [])
 
   return (
     <canvas

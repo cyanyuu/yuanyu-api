@@ -23,6 +23,7 @@ import type {
   QuotaDataItem,
   ProcessedChartData,
   ProcessedUserChartData,
+  DashboardFilters,
 } from '@/features/dashboard/types'
 import { getCurrencyDisplay } from '@/lib/currency'
 import { formatChartTime, type TimeGranularity } from '@/lib/time'
@@ -71,7 +72,8 @@ export function processChartData(
   data: QuotaDataItem[],
   timeGranularity: TimeGranularity = 'day',
   t?: TFunction,
-  chartCornerRadius?: number
+  chartCornerRadius?: number,
+  timeRange?: Pick<DashboardFilters, 'start_timestamp' | 'end_timestamp'>
 ): ProcessedChartData {
   const tt: TFunction = t ?? ((x) => x)
   const otherLabel = tt('Other')
@@ -299,7 +301,20 @@ export function processChartData(
         timeGranularity
       )
     )
-    return padded
+    if (!timeRange?.start_timestamp || !timeRange.end_timestamp) return padded
+    const startTimestamp = timeRange.start_timestamp.getTime() / 1000
+    const endTimestamp = timeRange.end_timestamp.getTime() / 1000
+    const start = formatChartTime(startTimestamp, timeGranularity)
+    const end = formatChartTime(endTimestamp, timeGranularity)
+    // Compare bucket timestamps rather than formatted labels across year boundaries.
+    return padded.filter((_, index) => {
+      const timestamp = lastTime - (MAX_TREND_POINTS - 1 - index) * intervalSec
+      const label = formatChartTime(timestamp, timeGranularity)
+      return (
+        (timestamp >= startTimestamp || label === start) &&
+        (timestamp <= endTimestamp || label === end)
+      )
+    })
   }
   const chartTimes = fillTimePoints(sortedTimes)
 

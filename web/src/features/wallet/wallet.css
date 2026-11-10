@@ -18,6 +18,19 @@ For commercial licensing, please contact support@quantumnous.com
 */
 
 .wallet-page {
+  --wallet-card-ground: color-mix(in oklch, var(--primary) 16%, #18202b);
+  --wallet-card-ink: #f6f8fc;
+  --wallet-card-muted: color-mix(
+    in oklch,
+    var(--wallet-card-ink) 76%,
+    transparent
+  );
+  --wallet-card-line: color-mix(
+    in oklch,
+    var(--wallet-card-ink) 14%,
+    transparent
+  );
+  --wallet-action: color-mix(in oklch, var(--primary) 65%, var(--foreground));
   display: flex;
   min-height: 100%;
   width: 100%;
@@ -31,27 +44,26 @@ For commercial licensing, please contact support@quantumnous.com
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 24px;
-  background-color: color-mix(in oklch, var(--card) 96%, #c9bc94);
-  background-image:
-    url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22168%22%20height%3D%2284%22%20viewBox%3D%220%200%20168%2084%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23b49861%22%20stroke-opacity%3D%22.2%22%20stroke-width%3D%22.7%22%3E%3Cpath%20d%3D%22M-84%2042Q-42%200%200%2042T84%2042T168%2042T252%2042%22%2F%3E%3Cpath%20d%3D%22M-84%2046Q-42%204%200%2046T84%2046T168%2046T252%2046%22%2F%3E%3Cpath%20d%3D%22M-84%2038Q-42%20-4%200%2038T84%2038T168%2038T252%2038%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E'),
-    linear-gradient(
-      to right,
-      color-mix(in oklch, var(--border) 32%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in oklch, var(--border) 32%, transparent) 1px,
-      transparent 1px
-    );
-  background-size:
-    168px 84px,
-    28px 28px,
-    28px 28px;
-}
-
-.wallet-background {
   flex: 1;
+  background:
+    radial-gradient(
+      ellipse at 10% 0%,
+      color-mix(in oklch, var(--primary) 6%, transparent),
+      transparent 65%
+    ),
+    color-mix(in oklch, var(--muted) 65%, var(--background));
+}
+.wallet-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 240 120"%3E%3Cg fill="none" stroke="black" stroke-width=".75"%3E%3Cpath d="M-120 60Q-60 0 0 60T120 60T240 60T360 60"/%3E%3Cpath d="M-120 68Q-60 8 0 68T120 68T240 68T360 68"/%3E%3C/g%3E%3C/svg%3E');
+}
+.dark .wallet-page {
+  --wallet-card-ground: color-mix(in oklch, var(--primary) 9%, var(--card));
 }
 
 .wallet-money-rain {
@@ -68,16 +80,16 @@ For commercial licensing, please contact support@quantumnous.com
   position: absolute;
   top: 0;
   display: block;
-  color: color-mix(in oklch, #a18a55 60%, transparent);
+  color: color-mix(in oklch, var(--primary) 40%, transparent);
   animation: wallet-money-fall var(--fall-duration) var(--fall-delay) linear
     infinite;
   animation-play-state: paused;
 }
 .wallet-money-particle:nth-child(3n + 2) {
-  color: color-mix(in oklch, #389d88 52%, transparent);
+  color: color-mix(in oklch, var(--primary) 28%, transparent);
 }
 .wallet-money-particle:nth-child(3n) {
-  color: color-mix(in oklch, var(--muted-foreground) 48%, transparent);
+  color: color-mix(in oklch, var(--muted-foreground) 30%, transparent);
 }
 .wallet-money-particle svg {
   display: block;
@@ -145,28 +157,22 @@ For commercial licensing, please contact support@quantumnous.com
   flex-direction: column;
   justify-content: space-between;
   min-width: 0;
-  min-height: 290px;
-  aspect-ratio: 1.85;
-  border: 1px solid #b5a47c;
-  border-radius: 22px;
-  padding: clamp(24px, 2.6vw, 44px);
-  padding-bottom: 42px;
-  color: #e6d3a3;
+  min-height: 0;
+  aspect-ratio: 1.72;
+  border: 1px solid var(--wallet-card-line);
+  border-radius: 24px;
+  padding: 26px 28px 38px;
+  color: var(--wallet-card-ink);
   background:
-    linear-gradient(
-      115deg,
-      #ffffff08,
-      transparent 32%,
-      #e6d3a308 65%,
-      transparent
+    radial-gradient(
+      ellipse at 100% 0%,
+      color-mix(in oklch, var(--primary) 28%, transparent),
+      transparent 65%
     ),
-    linear-gradient(135deg, #101c2d, #1a2b40 55%, #263950);
+    var(--wallet-card-ground);
   box-shadow:
-    inset 0 1px 0 #e6d3a340,
-    inset 0 -2px 0 #080f1a,
-    0 3px 0 #6e6b5d,
-    0 5px 0 #172436,
-    0 22px 32px -14px #101c2d40;
+    inset 0 1px 0 var(--wallet-card-line),
+    0 12px 24px -18px color-mix(in oklch, var(--foreground) 8%, transparent);
 }
 
 .wallet-card-glow {
@@ -181,8 +187,8 @@ For commercial licensing, please contact support@quantumnous.com
   opacity: 0;
   background: radial-gradient(
     circle,
-    #e6d3a32e,
-    #e6d3a314 35%,
+    color-mix(in oklch, var(--primary) 28%, transparent),
+    color-mix(in oklch, var(--wallet-card-ink) 6%, transparent) 35%,
     transparent 70%
   );
   transform: translate3d(
@@ -200,11 +206,9 @@ For commercial licensing, please contact support@quantumnous.com
       transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 220ms ease;
     box-shadow:
-      inset 0 1px 0 #e6d3a340,
-      inset 0 -2px 0 #080f1a,
-      0 3px 0 #6e6b5d,
-      0 5px 0 #172436,
-      var(--wallet-shadow-x, 0px) 22px 32px -14px #101c2d40;
+      inset 0 1px 0 var(--wallet-card-line),
+      var(--wallet-shadow-x, 0px) 12px 24px -18px
+        color-mix(in oklch, var(--foreground) 8%, transparent);
   }
   .wallet-balance-interaction:hover .wallet-balance-card {
     transition-duration: 160ms, 220ms;
@@ -227,12 +231,12 @@ For commercial licensing, please contact support@quantumnous.com
   z-index: -1;
   width: 90%;
   aspect-ratio: 1;
-  border: 1px solid #dac78024;
+  border: 1px solid color-mix(in oklch, var(--wallet-card-ink) 7%, transparent);
   border-radius: 50%;
   box-shadow:
-    0 0 0 22px #dac78008,
-    0 0 0 44px #dac78008,
-    0 0 0 66px #dac78006;
+    0 0 0 22px color-mix(in oklch, var(--wallet-card-ink) 3%, transparent),
+    0 0 0 44px color-mix(in oklch, var(--wallet-card-ink) 3%, transparent),
+    0 0 0 66px color-mix(in oklch, var(--wallet-card-ink) 2%, transparent);
   pointer-events: none;
 }
 .wallet-balance-card::before {
@@ -262,7 +266,7 @@ For commercial licensing, please contact support@quantumnous.com
   font-style: italic;
   font-weight: 600;
   letter-spacing: 0.15em;
-  color: #e6d3a3;
+  color: var(--wallet-card-ink);
 }
 .wallet-card-amount {
   position: relative;
@@ -276,43 +280,51 @@ For commercial licensing, please contact support@quantumnous.com
   letter-spacing: -0.035em;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 1px 1px #0008;
+  text-shadow: none;
 }
 .wallet-card-attribution {
   position: absolute;
   bottom: 14px;
   right: clamp(24px, 2.6vw, 44px);
   max-width: calc(100% - 48px);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  color: #c5bb9e;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--wallet-card-muted);
 }
 .wallet-card-chip {
   display: block;
   width: 34px;
   height: 27px;
   flex-shrink: 0;
-  border: 1px solid #e4c468;
+  border: 1px solid var(--wallet-card-line);
   border-radius: 6px;
   background:
     linear-gradient(
       90deg,
       transparent 30%,
-      #8b671a 31%,
+      var(--wallet-card-ground) 31%,
       transparent 33%,
       transparent 66%,
-      #8b671a 67%,
+      var(--wallet-card-ground) 67%,
       transparent 69%
     ),
-    linear-gradient(transparent 47%, #8b671a 48%, transparent 53%),
-    linear-gradient(135deg, #f1d994, #b38b35);
+    linear-gradient(
+      transparent 47%,
+      var(--wallet-card-ground) 48%,
+      transparent 53%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--primary) 24%, var(--wallet-card-ink)),
+      color-mix(in oklch, var(--primary) 48%, var(--wallet-card-ink))
+    );
 }
 .wallet-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   overflow: hidden;
-  border: 1px solid color-mix(in oklch, var(--border) 88%, #b39b67);
-  border-radius: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
   background: var(--card);
 }
 .wallet-metric {
@@ -322,7 +334,7 @@ For commercial licensing, please contact support@quantumnous.com
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 16px;
+  padding: 14px 16px;
 }
 .wallet-metric dt {
   min-width: 0;
@@ -359,15 +371,10 @@ For commercial licensing, please contact support@quantumnous.com
 }
 
 .wallet-overview {
-  gap: 32px;
+  gap: 28px;
   width: 100%;
   max-width: 500px;
   justify-self: center;
-}
-.wallet-balance-card {
-  min-height: 0;
-  aspect-ratio: 1.72;
-  padding: 24px 28px 36px;
 }
 .wallet-card-amount {
   margin: 20px 0;
@@ -376,17 +383,17 @@ For commercial licensing, please contact support@quantumnous.com
   font-size: clamp(30px, 2.6vw, 42px);
 }
 .wallet-card-label {
-  color: #d8c9a5;
+  color: var(--wallet-card-muted);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.16em;
 }
 .wallet-card-footer {
-  color: #d8c9a5;
+  color: var(--wallet-card-muted);
   font-size: 12px;
 }
 .wallet-card-footer > span:last-child {
-  color: #e6d3a3;
+  color: var(--wallet-card-ink);
   font-size: 14px;
   font-weight: 600;
 }
@@ -398,13 +405,13 @@ For commercial licensing, please contact support@quantumnous.com
   align-self: center;
   gap: 0;
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--card);
-  box-shadow: 0 10px 24px -20px #2d2617;
+  box-shadow: none;
 }
 .wallet-funding-tabs {
   width: calc(100% - 32px);
-  margin: 16px 16px 0;
+  margin: 18px 16px 0;
   min-height: 40px;
 }
 .wallet-funding-tabs [role='tab'] {
@@ -483,13 +490,13 @@ For commercial licensing, please contact support@quantumnous.com
 }
 .wallet-funding-panel > [data-slot='card'] {
   border: 0;
-  border-radius: 0 0 18px 18px;
+  border-radius: 0 0 20px 20px;
   box-shadow: none;
   --tw-ring-shadow: 0 0 #0000;
 }
 .wallet-funding-panel [data-slot='card-header'] {
   border: 0;
-  padding: 12px 18px 0 !important;
+  padding: 14px 22px 0 !important;
 }
 .wallet-funding-panel [data-slot='card-header'] [data-slot='card-title'],
 .wallet-funding-panel [data-slot='card-header'] [data-slot='icon-badge'] {
@@ -500,10 +507,10 @@ For commercial licensing, please contact support@quantumnous.com
   margin: 0;
 }
 .wallet-funding-panel > [data-slot='card'] > [data-slot='card-content'] {
-  padding: 14px 18px 18px;
+  padding: 16px 22px 22px;
 }
 .wallet-recharge .wallet-preset {
-  min-height: 52px;
+  min-height: 56px;
   padding: 7px 10px;
   gap: 2px;
 }
@@ -517,7 +524,7 @@ For commercial licensing, please contact support@quantumnous.com
   color: color-mix(in oklch, var(--primary) 30%, var(--foreground));
 }
 .wallet-recharge [aria-busy='true'] > div:first-child [data-slot='skeleton'] {
-  height: 52px;
+  height: 56px;
 }
 .wallet-recharge .wallet-payment-total > span:first-child {
   font-size: 12px;
@@ -542,9 +549,9 @@ For commercial licensing, please contact support@quantumnous.com
   padding: 0 24px 24px;
 }
 .wallet-referral {
-  border: 1px solid color-mix(in oklch, var(--border) 72%, #b39b67);
-  border-radius: 18px;
-  background: color-mix(in oklch, var(--card) 97%, #c9bc94);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--card);
   box-shadow: none;
   --tw-ring-shadow: 0 0 #0000;
 }
@@ -563,7 +570,7 @@ For commercial licensing, please contact support@quantumnous.com
 }
 .wallet-referral-icon {
   margin-top: 1px;
-  color: #a18a55;
+  color: color-mix(in oklch, var(--primary) 65%, var(--foreground));
 }
 .wallet-referral-stats {
   display: grid;
@@ -586,6 +593,13 @@ For commercial licensing, please contact support@quantumnous.com
   align-items: center;
   gap: 10px;
 }
+.wallet-referral-actions > [data-slot='button'] {
+  color: var(--background);
+  background: var(--wallet-action);
+}
+.wallet-referral-actions > [data-slot='button']:not(:disabled):hover {
+  background: color-mix(in oklch, var(--wallet-action) 88%, var(--foreground));
+}
 .wallet-referral-link {
   display: flex;
   min-width: 0;
@@ -598,15 +612,16 @@ For commercial licensing, please contact support@quantumnous.com
   background: var(--background);
 }
 .wallet-referral-link:focus-within {
-  border-color: #a18a55;
+  border-color: var(--ring);
+  outline: 2px solid color-mix(in oklch, var(--ring) 24%, transparent);
 }
 .wallet-referral-notice {
   grid-column: 1 / -1;
 }
 
 .wallet-referral-content {
-  padding: 16px;
-  gap: 16px;
+  padding: 20px;
+  gap: 18px;
 }
 .wallet-referral-stats > div {
   padding-inline: 8px;
@@ -628,8 +643,8 @@ For commercial licensing, please contact support@quantumnous.com
   }
   .wallet-canvas {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 24px;
-    padding: 20px 28px;
+    gap: 32px;
+    padding: 28px 32px;
   }
   .wallet-overview {
     justify-self: end;
@@ -638,7 +653,7 @@ For commercial licensing, please contact support@quantumnous.com
     justify-self: start;
   }
   .wallet-background-footer {
-    padding: 0 28px 20px;
+    padding: 0 32px 24px;
   }
   .wallet-referral-content {
     grid-template-columns: minmax(0, 0.85fr) minmax(220px, 0.8fr) minmax(
@@ -655,6 +670,18 @@ For commercial licensing, please contact support@quantumnous.com
   }
   .wallet-referral-intro p {
     margin-top: 4px;
+  }
+}
+/* Keep the large-type preset readable without adding a desktop page scrollbar. */
+@media (min-width: 1100px) {
+  [data-theme-preset='simple-large'] .wallet-canvas {
+    padding-block: 16px;
+  }
+  [data-theme-preset='simple-large'] .wallet-background-footer {
+    padding-bottom: 16px;
+  }
+  [data-theme-preset='simple-large'] .wallet-referral-content {
+    padding-block: 14px;
   }
 }
 @media (min-width: 1100px) and (max-height: 820px) {
@@ -687,6 +714,12 @@ For commercial licensing, please contact support@quantumnous.com
   }
   .wallet-recharge .space-y-4 > :not(:last-child) {
     margin-block-end: 12px;
+  }
+  .wallet-recharge .wallet-preset {
+    min-height: 48px;
+  }
+  .wallet-recharge [aria-busy='true'] > div:first-child [data-slot='skeleton'] {
+    height: 48px;
   }
   .wallet-referral-content {
     padding: 12px 14px;
@@ -740,7 +773,7 @@ For commercial licensing, please contact support@quantumnous.com
     grid-template-columns: minmax(0, 1fr);
   }
   .wallet-metric {
-    padding: 10px 16px;
+    padding: 14px 16px;
   }
   .wallet-metric + .wallet-metric::before {
     top: 0;

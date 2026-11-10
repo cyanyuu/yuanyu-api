@@ -23,6 +23,26 @@ import type { TimeGranularity } from '@/lib/time'
 
 import { processChartData, processUserChartData } from '../charts'
 
+test('keeps hourly chart padding inside the selected calendar day', () => {
+  const start = new Date(2026, 10, 10).getTime() / 1000
+  const end = start + 2 * 3600
+  const result = processChartData(
+    [{ created_at: end, model_name: 'model-a', quota: 500000, count: 1 }],
+    'hour',
+    undefined,
+    undefined,
+    {
+      start_timestamp: new Date(start * 1000),
+      end_timestamp: new Date(end * 1000),
+    }
+  )
+  for (const key of ['spec_line', 'spec_area', 'spec_model_line'] as const) {
+    expect(
+      result[key].data[0].values.map((row: { Time: string }) => row.Time)
+    ).toEqual(['11-10 00:00', '11-10 01:00', '11-10 02:00'])
+  }
+})
+
 const cases: Array<{
   granularity: TimeGranularity
   start: string
